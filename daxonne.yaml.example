@@ -1,0 +1,10 @@
+database:
+  type: oracle
+  connection: "oracle://user:password@host:1521/service_name"
+  owner: "MY_SCHEMA"
+
+output:
+  path: "./generated"
+
+templates:
+  - csharp-dapper
