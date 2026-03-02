@@ -80,7 +80,7 @@ func runAdd(_ *cobra.Command, args []string) error {
 func printTemplateRegistry() {
 	fmt.Printf("\n%-25s %-10s %-14s %s\n", "NAME", "VERSION", "LANGUAGE", "DESCRIPTION")
 	fmt.Printf("%-25s %-10s %-14s %s\n", "────────────────────────", "───────", "────────────", "───────────────────────────────────────")
-	for _, e := range tmpl.DefaultRegistry {
+	for _, e := range tmpl.LoadRegistry() {
 		fmt.Printf("%-25s %-10s %-14s %s\n", e.Name, e.Version, e.Language, e.Description)
 	}
 	fmt.Println()

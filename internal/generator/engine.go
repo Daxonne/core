@@ -171,6 +171,58 @@ var csharpTypeMap = map[string]string{
 	"uuid":     "Guid",
 }
 
+// typescriptTypeMap maps Daxonne internal types to their TypeScript equivalents.
+var typescriptTypeMap = map[string]string{
+	"string":   "string",
+	"int":      "number",
+	"long":     "number",
+	"decimal":  "number",
+	"bool":     "boolean",
+	"date":     "Date",
+	"datetime": "Date",
+	"bytes":    "Uint8Array",
+	"uuid":     "string",
+}
+
+// javaTypeMap maps Daxonne internal types to their Java equivalents.
+var javaTypeMap = map[string]string{
+	"string":   "String",
+	"int":      "Integer",
+	"long":     "Long",
+	"decimal":  "BigDecimal",
+	"bool":     "Boolean",
+	"date":     "LocalDate",
+	"datetime": "LocalDateTime",
+	"bytes":    "byte[]",
+	"uuid":     "UUID",
+}
+
+// pythonTypeMap maps Daxonne internal types to their Python equivalents.
+var pythonTypeMap = map[string]string{
+	"string":   "str",
+	"int":      "int",
+	"long":     "int",
+	"decimal":  "Decimal",
+	"bool":     "bool",
+	"date":     "date",
+	"datetime": "datetime",
+	"bytes":    "bytes",
+	"uuid":     "UUID",
+}
+
+// sqlalchemyTypeMap maps Daxonne internal types to their SQLAlchemy column types.
+var sqlalchemyTypeMap = map[string]string{
+	"string":   "String",
+	"int":      "Integer",
+	"long":     "BigInteger",
+	"decimal":  "Numeric",
+	"bool":     "Boolean",
+	"date":     "Date",
+	"datetime": "DateTime",
+	"bytes":    "LargeBinary",
+	"uuid":     "Uuid",
+}
+
 // toPascalCase converts UPPER_SNAKE_CASE, snake_case, or kebab-case to PascalCase.
 // Example: "USER_ACCOUNT" → "UserAccount", "first-name" → "FirstName".
 func toPascalCase(s string) string {
@@ -183,6 +235,12 @@ func toPascalCase(s string) string {
 		}
 	}
 	return strings.Join(parts, "")
+}
+
+// toSnakeCase converts UPPER_SNAKE_CASE or PascalCase to lower_snake_case.
+// Example: "USER_ACCOUNT" → "user_account", "UserAccount" → "user_account".
+func toSnakeCase(s string) string {
+	return strings.ToLower(strings.ReplaceAll(s, "-", "_"))
 }
 
 func registerHelpers() {
@@ -230,6 +288,85 @@ func registerHelpers() {
 	raymond.RegisterHelper("PrimaryKeyType", func(cols interface{}) string {
 		if t := firstPKField(cols, "type"); t != "" {
 			if v, ok := csharpTypeMap[t]; ok {
+				return v
+			}
+		}
+		return "int"
+	})
+
+	// SnakeCase — {{SnakeCase name}} → "user_account"
+	raymond.RegisterHelper("SnakeCase", func(str string) string {
+		return toSnakeCase(str)
+	})
+
+	// TypeScriptType — {{TypeScriptType type}} → "string", "number", "boolean", …
+	raymond.RegisterHelper("TypeScriptType", func(t string) string {
+		if v, ok := typescriptTypeMap[t]; ok {
+			return v
+		}
+		return "unknown"
+	})
+
+	// JavaType — {{JavaType type}} → "String", "Integer", "BigDecimal", …
+	raymond.RegisterHelper("JavaType", func(t string) string {
+		if v, ok := javaTypeMap[t]; ok {
+			return v
+		}
+		return "Object"
+	})
+
+	// PythonType — {{PythonType type}} → "str", "int", "Decimal", …
+	raymond.RegisterHelper("PythonType", func(t string) string {
+		if v, ok := pythonTypeMap[t]; ok {
+			return v
+		}
+		return "Any"
+	})
+
+	// SQLAlchemyType — {{SQLAlchemyType type}} → "String", "Integer", "Numeric", …
+	raymond.RegisterHelper("SQLAlchemyType", func(t string) string {
+		if v, ok := sqlalchemyTypeMap[t]; ok {
+			return v
+		}
+		return "String"
+	})
+
+	// PrimaryKeyCamelCase — {{PrimaryKeyCamelCase columns}} → camelCase name of first PK column
+	raymond.RegisterHelper("PrimaryKeyCamelCase", func(cols interface{}) string {
+		if name := firstPKField(cols, "name"); name != "" {
+			pc := toPascalCase(name)
+			if len(pc) == 0 {
+				return pc
+			}
+			return strings.ToLower(pc[:1]) + pc[1:]
+		}
+		return "id"
+	})
+
+	// TypeScriptPrimaryKeyType — {{TypeScriptPrimaryKeyType columns}} → TypeScript type of first PK
+	raymond.RegisterHelper("TypeScriptPrimaryKeyType", func(cols interface{}) string {
+		if t := firstPKField(cols, "type"); t != "" {
+			if v, ok := typescriptTypeMap[t]; ok {
+				return v
+			}
+		}
+		return "number"
+	})
+
+	// JavaPrimaryKeyType — {{JavaPrimaryKeyType columns}} → Java type of first PK
+	raymond.RegisterHelper("JavaPrimaryKeyType", func(cols interface{}) string {
+		if t := firstPKField(cols, "type"); t != "" {
+			if v, ok := javaTypeMap[t]; ok {
+				return v
+			}
+		}
+		return "Long"
+	})
+
+	// PythonPrimaryKeyType — {{PythonPrimaryKeyType columns}} → Python type of first PK
+	raymond.RegisterHelper("PythonPrimaryKeyType", func(cols interface{}) string {
+		if t := firstPKField(cols, "type"); t != "" {
+			if v, ok := pythonTypeMap[t]; ok {
 				return v
 			}
 		}
