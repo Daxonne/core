@@ -1,8 +1,9 @@
 # Project config — contains credentials, use daxonne.yaml.example as reference
 daxonne.yaml
 
-# Daxonne local work directory — schema cache is machine-specific
+# Daxonne local work directory — schema cache and downloaded templates are machine-specific
 .daxonne/schema.json
+.daxonne/templates/
 
 # Generated output (add to your project's .gitignore if needed)
 generated/

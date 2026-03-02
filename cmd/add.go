@@ -17,8 +17,9 @@ var addCmd = &cobra.Command{
 	Short: "Install a code generation template",
 	Long: `Install a template from the Daxonne template registry.
 
-Templates are copied from templates-src/<name>/ into .daxonne/templates/<name>/.
+Templates are downloaded from github.com/Daxonne/templates into .daxonne/templates/<name>/.
 The template is automatically added to the templates list in daxonne.yaml.
+Set GITHUB_TOKEN to avoid rate limiting on the GitHub API.
 
 List available templates with:
   daxonne add --list`,
